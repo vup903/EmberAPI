@@ -8,9 +8,13 @@ from sklearn.ensemble import RandomForestClassifier
 app = Flask(__name__)
 
 # 读取数据
-og_df = pd.read_csv('bullshit2.csv')
+csv_file_path = 'bullshit2.csv'
+if os.path.exists(csv_file_path):
+    og_df = pd.read_csv(csv_file_path)
+else:
+    raise FileNotFoundError(f"{csv_file_path} 文件未找到，请确保文件存在并重试。")
 
-# 定义分类函数
+# 定义血压分类函数
 def categorize_bp(row):
     if row['bpavg_systolic'] >= 140 or row['bpavg_diastolic'] >= 90:
         return 'high'
@@ -19,7 +23,7 @@ def categorize_bp(row):
     else:
         return 'medium'
 
-# 处理数据集
+# 处理数据
 if "bp_category" not in og_df.columns:
     og_df['bp_category'] = og_df.apply(categorize_bp, axis=1)
     og_df["age"] = og_df["age"].round(0)
@@ -46,11 +50,8 @@ def get_best_features(X_test, model, good_ranges):
     original_proba = model.predict_proba(X_test)[0]
     original_class = np.argmax(original_proba)
     
-    if original_class != 1:
-        healthier = True
-    else:
-        healthier = False
-    
+    healthier = original_class != 1  # 假设'1'为'medium'类，若当前分类不是'medium'，则意味着可以改善
+
     largest_change = 0
     best_feature = None
 
@@ -67,12 +68,12 @@ def get_best_features(X_test, model, good_ranges):
     
     return best_feature, healthier
 
-# 定义根目录路由
+# 根目录路由
 @app.route('/')
 def home():
     return "Hello, World!"
 
-# 定义预测路由
+# 预测路由
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
