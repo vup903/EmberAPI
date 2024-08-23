@@ -8,7 +8,7 @@ from sklearn.ensemble import RandomForestClassifier
 app = Flask(__name__)
 
 # 读取数据
-csv_file_path = 'bullshit2.csv'
+csv_file_path = 'Bullshit2.csv'
 if os.path.exists(csv_file_path):
     og_df = pd.read_csv(csv_file_path)
 else:
