@@ -78,9 +78,12 @@ def home():
 def predict():
     try:
         user_data = request.json
+        print(f"Received data: {user_data}")
         
         # 将JSON数据转换为DataFrame
         new_value = pd.DataFrame([user_data]).set_index(".id")
+        print(f"DataFrame created from input: {new_value}")
+        
         age_val = user_data["age"]
         gender_val = user_data["gender"]
         height_val = user_data["bodylength"]
@@ -90,9 +93,11 @@ def predict():
                    (og_df['bodylength'].between(height_val - 5, height_val + 5))]
         
         if df.empty:
+            print("No matching data found in the dataset.")
             return jsonify({"error": "No matching data found"}), 404
 
         model = train_model(df)
+        print("Model trained successfully.")
         
         new_value2 = new_value[["income", "bodyweight", "education_years", "work_experience", "savings", "spending", "cigarettes_smoked_per_day", "number_of_cats", "savings_in_bank", "hours_exercise_per_week", "coffees_per_day"]]
         best_feature, healthier = get_best_features(new_value2, model, {
@@ -110,6 +115,7 @@ def predict():
         })
 
         prediction = model.predict(new_value2)[0]
+        print(f"Prediction: {prediction}, Best Feature: {best_feature}, Can Improve Class: {healthier}")
         
         response = {
             "user_data": user_data,
@@ -121,6 +127,7 @@ def predict():
         return jsonify(response), 200
 
     except Exception as e:
+        print(f"Error occurred: {str(e)}")
         return jsonify({"error": str(e)}), 400
 
 if __name__ == '__main__':
