@@ -88,9 +88,10 @@ def predict():
         gender_val = user_data["gender"]
         height_val = user_data["bodylength"]
 
-        df = og_df[(og_df["age"] == age_val) & 
+        # 修改：放宽筛选条件以增加匹配成功的可能性
+        df = og_df[(og_df["age"].between(age_val - 5, age_val + 5)) &  # 放宽年龄范围
                    (og_df["gender"] == gender_val) &
-                   (og_df['bodylength'].between(height_val - 5, height_val + 5))]
+                   (og_df['bodylength'].between(height_val - 10, height_val + 10))]  # 放宽身高范围
         
         if df.empty:
             print("No matching data found in the dataset.")
