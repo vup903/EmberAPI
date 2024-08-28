@@ -102,8 +102,8 @@ def predict():
         gender_val = user_data["gender_1a_q_1"]
         height_val = user_data["bodylength_cm_all_m_1_1a_v_1"]
 
-        # 容差范围增加 5cm，确保匹配到数据
-        df = og_df[(og_df["age_new"] == age_val) &
+        # 加入年龄和身高的容差范围
+        df = og_df[(og_df["age_new"].between(age_val - 5, age_val + 5)) &
                    (og_df["gender_1a_q_1"].str.upper() == gender_val.upper()) &  # 确保性别一致
                    (og_df['bodylength_cm_all_m_1_1a_v_1'].between(height_val - 5, height_val + 5))]
 
